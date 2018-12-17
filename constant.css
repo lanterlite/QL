@@ -1,0 +1,28 @@
+:root {
+	--FLORALWHITE: #FFFAF0;
+	--CRIMSON: #DC143C;
+	--SADDLEBROWN: #8B4513;
+	--GOLDENROD: #DAA520;
+	--PERU: #CD853F;
+	--OLIVEDRAB: #9ACD32 ;
+	--YELLOW: #FFFF00;
+	--CREAM: #FFFCC9;
+	--DARKGOLDENROD: #B8860B;
+	--SANDYBROWN: #F4A460;
+	--GOLD: #FFD700;
+};
+
+@font-face {
+    font-family: 'lanterlite_impact'; /*a name to be used later*/
+    src: url('fonts/impact.ttf') /*URL to font*/
+}
+
+@font-face {
+    font-family: 'lanterlite_cambria'; /*a name to be used later*/
+    src: url('fonts/cambria.ttc') /*URL to font*/
+}
+
+@font-face {
+    font-family: 'lanterlite_constantia'; /*a name to be used later*/
+    src: url('fonts/constan.ttf') /*URL to font*/
+}

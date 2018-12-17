@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<link rel="stylesheet" type="text/css" href="constant.css">
+<style type="text/css">
+  /*.q_canvas table td.left { width: 20%; }*/
+  /*.q_canvas table td.right { width: 80%; }*/
+  .q_canvas table td.first { background-color: var(--FLORALWHITE); }
+  .q_canvas table td.second { background-color: var(--CREAM); }
+  /*.tbl_ayat .row_translation { display: none; }*/
+  .q_canvas { width: 100%; background-color: #fffcc9; }
+  .q_canvas table { width: 100% }
+  .header { position: fixed; left: 0vw; top: 0vw; 
+    width: 100%; height: auto; padding: 0.5vw;
+    background-color: var(--SADDLEBROWN); color: var(--CREAM);
+  }
+</style>
+<body>
+  <div class="header">
+    <h7>Quranic Light</h7>
+    <select name="list_surah">
+<!--       <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="fiat">Fiat</option>
+      <option value="audi">Audi</option>
+ -->    </select>
+  </div>
+  <button onclick="hide()">Hide Translate</button>
+  <div class="q_canvas">
+  <input type="text"><input type="submit" onclick="clickSurah()">
+  <table>
+    <tr><td class="tbl_surah"></td></tr>
+    <tr><td class="tbl_ayat"></td></tr>
+  </table>
+  </div>
+</body>
+
+<script type="text/javascript">
+  var div = document.querySelector('.q_canvas table')
+  div.setAttribute('style', "border: 1px solid black;")
+
+  function hide() {
+    var row_translation = document.getElementsByClassName('row_translation');
+    // row_translation.style.display = 'none';
+    console.log(row_translation)
+    for (var i=0; i<row_translation.length; i++) {
+      if (row_translation[i].style.display == '')
+        row_translation[i].style.display = 'none';
+      else
+        row_translation[i].style.display = '';      
+    }
+  }
+
+  var id_surah = 1;
+  getContent()
+
+  function showTranslate() {
+
+  }
+
+  function clickSurah() {
+    id_surah = document.querySelector('.q_canvas input[type=text]').value
+    clearContent()
+    getContent()
+  }
+
+  function clearContent() {
+    var tbl_surah = document.querySelector('.tbl_surah table');
+    tbl_surah.parentNode.removeChild(tbl_surah);    
+    var tbl_ayat = document.querySelector('.tbl_ayat table');
+    tbl_ayat.parentNode.removeChild(tbl_ayat);    
+  }
+
+  function generateSurah(obj) {
+    var tbl_surah = document.querySelector('.tbl_surah');
+    var table = document.createElement('table');
+    table.appendChild(createRow(obj['arabic']['name'], parseInt(obj['arabic']['index'])))
+    tbl_surah.appendChild(table);
+    function createRow(surah_name, surah_no) {
+      var tr = document.createElement('tr');
+      var td = document.createElement('td');
+      var txt = document.createTextNode(surah_name + " [Surah No." + surah_no + "]");
+      td.appendChild(txt);
+      tr.appendChild(td);
+      return tr;
+    }
+  }
+
+  function generateAyat(obj) {
+    var tbl_ayat = document.querySelector('.tbl_ayat');
+    var table = document.createElement('table');
+    var ayats = Object.keys(obj['arabic']['verse'])
+    for (var j=0; j<ayats.length; j++) {
+      var ayat_num = ayats[j].split('_')[1];
+      table.appendChild(createAyatRow(ayat_num, obj['arabic']['verse'][ayats[j]]))
+      table.appendChild(createTranslateRow(ayat_num, obj['en']['verse'][ayats[j]]))
+      table.appendChild(createTranslateRow(ayat_num, obj['id']['verse'][ayats[j]]))
+    }
+    tbl_ayat.appendChild(table);
+    function createAyatRow(no, content) {
+      var tr = document.createElement('tr');
+      var td_arabic = document.createElement('td');
+      td_arabic.setAttribute('class', 'right');
+      td_arabic.setAttribute('style', 'text-align: right;');
+      var td_number = document.createElement('td');
+      td_number.setAttribute('class', 'left');
+      var txt_arabic = document.createTextNode(content);
+      var txt_number = document.createTextNode("[" + no + "]");
+      td_arabic.appendChild(txt_arabic);
+      td_number.appendChild(txt_number);
+      tr.appendChild(td_number);
+      tr.appendChild(td_arabic);
+      return tr;
+    }
+    function createTranslateRow(no, content) {
+      var tr = document.createElement('tr');
+      tr.setAttribute('class', 'row_translation');
+      // tr.style.display = 'none';
+      // tr.setAttribute('style', 'display: none;');
+      var td_arabic = document.createElement('td');
+      td_arabic.setAttribute('class', 'right');
+      var td_number = document.createElement('td');
+      td_number.setAttribute('class', 'left');
+      var txt_arabic = document.createTextNode(content);
+      var txt_number = document.createTextNode("[" + no + "]");
+      td_arabic.appendChild(txt_arabic);
+      td_number.appendChild(txt_number);
+      tr.appendChild(td_number);
+      tr.appendChild(td_arabic);
+      return tr;
+    }
+  }
+  
+  function getContent() {
+    getContFromServ(function (obj) {
+      generateSurah(obj)
+      generateAyat(obj)
+    })
+  }
+
+  function getContFromServ(callback) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+           callback(JSON.parse(xhttp.responseText));
+        }
+    };
+    xhttp.open("GET", "http://localhost/quran/quran.php?surah=" + id_surah, true);
+    xhttp.send();
+  }
+
+</script>
+</html>
